@@ -183,6 +183,10 @@ public:
   /// Check if every option corresponds to a specific checker or package.
   void validateCheckerOptions() const;
 
+  typedef CheckerInfoList::const_iterator info_const_iterator;
+  info_const_iterator info_begin() const { return Data.Checkers.begin(); }
+  info_const_iterator info_end() const { return Data.Checkers.end(); }
+
 private:
   template <bool IsWeak> void resolveDependencies();
   void resolveCheckerAndPackageOptions();
