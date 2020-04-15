@@ -24,7 +24,7 @@ namespace ento {
 //===----------------------------------------------------------------------===//
 
 class AnalysisAction : public ASTFrontendAction {
-protected:
+public:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef InFile) override;
 };
