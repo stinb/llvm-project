@@ -221,7 +221,7 @@ public:
   //
   // FIXME: Eliminate the llvm_shutdown requirement, that should either be part
   // of the context or else not CompilerInstance specific.
-  bool ExecuteAction(FrontendAction &Act);
+  bool ExecuteAction(FrontendAction &Act, TargetInfo *Target = nullptr);
 
   /// }
   /// @name Compiler Invocation and Options
