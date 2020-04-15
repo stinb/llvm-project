@@ -14635,13 +14635,17 @@ QualType Sema::CheckAddressOfOperand(ExprResult &OrigOp, SourceLocation OpLoc) {
 
     // The method was named without a qualifier.
     } else if (!DRE->getQualifier()) {
+      unsigned Diagnostic = diag::err_unqualified_pointer_member_function;
+      if (getLangOpts().MSVCCompat)
+        Diagnostic = diag::ext_unqualified_pointer_member_function;
+
       if (MD->getParent()->getName().empty())
-        Diag(OpLoc, diag::err_unqualified_pointer_member_function)
+        Diag(OpLoc, Diagnostic)
           << op->getSourceRange();
       else {
         SmallString<32> Str;
         StringRef Qual = (MD->getParent()->getName() + "::").toStringRef(Str);
-        Diag(OpLoc, diag::err_unqualified_pointer_member_function)
+        Diag(OpLoc, Diagnostic)
           << op->getSourceRange()
           << FixItHint::CreateInsertion(op->getSourceRange().getBegin(), Qual);
       }
