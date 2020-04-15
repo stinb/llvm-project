@@ -242,7 +242,7 @@ public:
   //
   // FIXME: Eliminate the llvm_shutdown requirement, that should either be part
   // of the context or else not CompilerInstance specific.
-  bool ExecuteAction(FrontendAction &Act);
+  bool ExecuteAction(FrontendAction &Act, TargetInfo *Target = nullptr);
 
   /// At the end of a compilation, print the number of warnings/errors.
   void printDiagnosticStats();
@@ -428,7 +428,7 @@ public:
   void setAuxTarget(TargetInfo *Value);
 
   // Create Target and AuxTarget based on current options
-  bool createTarget();
+  bool createTarget(TargetInfo *Target = nullptr);
 
   /// @}
   /// @name Virtual File System

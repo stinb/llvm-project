@@ -106,10 +106,10 @@ void CompilerInstance::setVerboseOutputStream(std::unique_ptr<raw_ostream> Value
 void CompilerInstance::setTarget(TargetInfo *Value) { Target = Value; }
 void CompilerInstance::setAuxTarget(TargetInfo *Value) { AuxTarget = Value; }
 
-bool CompilerInstance::createTarget() {
+bool CompilerInstance::createTarget(TargetInfo *Target) {
   // Create the target instance.
-  setTarget(TargetInfo::CreateTargetInfo(getDiagnostics(),
-                                         getInvocation().TargetOpts));
+  setTarget(Target ? Target :
+    TargetInfo::CreateTargetInfo(getDiagnostics(), getInvocation().TargetOpts));
   if (!hasTarget())
     return false;
 
@@ -1005,7 +1005,7 @@ bool CompilerInstance::InitializeSourceManager(const FrontendInputFile &Input,
 
 // High-Level Operations
 
-bool CompilerInstance::ExecuteAction(FrontendAction &Act) {
+bool CompilerInstance::ExecuteAction(FrontendAction &Act, TargetInfo *Target) {
   assert(hasDiagnostics() && "Diagnostics engine is not initialized!");
   assert(!getFrontendOpts().ShowHelp && "Client must handle '-help'!");
   assert(!getFrontendOpts().ShowVersion && "Client must handle '-version'!");
@@ -1025,7 +1025,7 @@ bool CompilerInstance::ExecuteAction(FrontendAction &Act) {
   if (!Act.PrepareToExecute(*this))
     return false;
 
-  if (!createTarget())
+  if (!createTarget(Target))
     return false;
 
   // rewriter project will change target built-in bool type from its default.
