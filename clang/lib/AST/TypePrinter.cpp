@@ -588,8 +588,7 @@ void TypePrinter::printAdjustedAfter(const AdjustedType *T, raw_ostream &OS) {
 }
 
 void TypePrinter::printDecayedBefore(const DecayedType *T, raw_ostream &OS) {
-  // Print as though it's a pointer.
-  printAdjustedBefore(T, OS);
+  printBefore(T->getOriginalType(), OS);
 }
 
 void TypePrinter::printArrayParameterAfter(const ArrayParameterType *T,
@@ -603,7 +602,7 @@ void TypePrinter::printArrayParameterBefore(const ArrayParameterType *T,
 }
 
 void TypePrinter::printDecayedAfter(const DecayedType *T, raw_ostream &OS) {
-  printAdjustedAfter(T, OS);
+  printAfter(T->getOriginalType(), OS);
 }
 
 void TypePrinter::printDependentSizedArrayBefore(
