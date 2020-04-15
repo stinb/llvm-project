@@ -65,6 +65,9 @@ public:
   /// Callback invoked whenever an inclusion directive results in a
   /// file-not-found error.
   ///
+  /// \param FileNameLoc The location of the file name in the include
+  /// directive.
+  ///
   /// \param FileName The name of the file being included, as written in the
   /// source code.
   ///
@@ -74,7 +77,7 @@ public:
   ///
   /// \returns true to indicate that the preprocessor should attempt to recover
   /// by adding \p RecoveryPath as a header search path.
-  virtual bool FileNotFound(StringRef FileName,
+  virtual bool FileNotFound(SourceLocation FileNameLoc, StringRef &FileName,
                             SmallVectorImpl<char> &RecoveryPath) {
     return false;
   }
@@ -405,10 +408,10 @@ public:
     Second->FileSkipped(SkippedFile, FilenameTok, FileType);
   }
 
-  bool FileNotFound(StringRef FileName,
+  bool FileNotFound(SourceLocation FileNameLoc, StringRef &FileName,
                     SmallVectorImpl<char> &RecoveryPath) override {
-    return First->FileNotFound(FileName, RecoveryPath) ||
-           Second->FileNotFound(FileName, RecoveryPath);
+    return First->FileNotFound(FileNameLoc, FileName, RecoveryPath) ||
+           Second->FileNotFound(FileNameLoc, FileName, RecoveryPath);
   }
 
   void InclusionDirective(SourceLocation HashLoc, const Token &IncludeTok,

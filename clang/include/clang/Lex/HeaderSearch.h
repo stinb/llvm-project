@@ -281,15 +281,6 @@ public:
     //LookupFileCache.clear();
   }
 
-  /// Add an additional search path.
-  void AddSearchPath(const DirectoryLookup &dir, bool isAngled) {
-    unsigned idx = isAngled ? SystemDirIdx : AngledDirIdx;
-    SearchDirs.insert(SearchDirs.begin() + idx, dir);
-    if (!isAngled)
-      AngledDirIdx++;
-    SystemDirIdx++;
-  }
-
   /// Set the list of system header prefixes.
   void SetSystemHeaderPrefixes(ArrayRef<std::pair<std::string, bool>> P) {
     SystemHeaderPrefixes.assign(P.begin(), P.end());
@@ -404,8 +395,7 @@ public:
       ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>> Includers,
       SmallVectorImpl<char> *SearchPath, SmallVectorImpl<char> *RelativePath,
       Module *RequestingModule, ModuleMap::KnownHeader *SuggestedModule,
-      bool *IsMapped, bool *IsFrameworkFound, bool SkipCache = false,
-      bool BuildSystemModule = false);
+      bool *IsMapped, bool *IsFrameworkFound, bool BuildSystemModule = false);
 
   /// Look up a subframework for the specified \#include file.
   ///

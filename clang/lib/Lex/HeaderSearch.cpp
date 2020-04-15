@@ -757,8 +757,7 @@ Optional<FileEntryRef> HeaderSearch::LookupFile(
     ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>> Includers,
     SmallVectorImpl<char> *SearchPath, SmallVectorImpl<char> *RelativePath,
     Module *RequestingModule, ModuleMap::KnownHeader *SuggestedModule,
-    bool *IsMapped, bool *IsFrameworkFound, bool SkipCache,
-    bool BuildSystemModule) {
+    bool *IsMapped, bool *IsFrameworkFound, bool BuildSystemModule) {
   if (IsMapped)
     *IsMapped = false;
 
@@ -896,7 +895,7 @@ Optional<FileEntryRef> HeaderSearch::LookupFile(
   // If the entry has been previously looked up, the first value will be
   // non-zero.  If the value is equal to i (the start point of our search), then
   // this is a matching hit.
-  if (!SkipCache && CacheLookup.StartIdx == i+1) {
+  if (CacheLookup.StartIdx == i+1) {
     // Skip querying potentially lots of directories for this lookup.
     i = CacheLookup.HitIdx;
     if (CacheLookup.MappedName) {

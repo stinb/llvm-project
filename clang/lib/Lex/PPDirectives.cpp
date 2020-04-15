@@ -725,7 +725,7 @@ Optional<FileEntryRef> Preprocessor::LookupFile(
     const DirectoryLookup *&CurDir, SmallVectorImpl<char> *SearchPath,
     SmallVectorImpl<char> *RelativePath,
     ModuleMap::KnownHeader *SuggestedModule, bool *IsMapped,
-    bool *IsFrameworkFound, bool SkipCache) {
+    bool *IsFrameworkFound) {
   Module *RequestingModule = getModuleForLocation(FilenameLoc);
   bool RequestingModuleIsModuleInterface = !SourceMgr.isInMainFile(FilenameLoc);
 
@@ -784,7 +784,7 @@ Optional<FileEntryRef> Preprocessor::LookupFile(
                Filename, FilenameLoc, isAngled, TmpFromDir, TmpCurDir,
                Includers, SearchPath, RelativePath, RequestingModule,
                SuggestedModule, /*IsMapped=*/nullptr,
-               /*IsFrameworkFound=*/nullptr, SkipCache)) {
+               /*IsFrameworkFound=*/nullptr)) {
       // Keep looking as if this file did a #include_next.
       TmpFromDir = TmpCurDir;
       ++TmpFromDir;
@@ -801,7 +801,7 @@ Optional<FileEntryRef> Preprocessor::LookupFile(
   Optional<FileEntryRef> FE = HeaderInfo.LookupFile(
       Filename, FilenameLoc, isAngled, FromDir, CurDir, Includers, SearchPath,
       RelativePath, RequestingModule, SuggestedModule, IsMapped,
-      IsFrameworkFound, SkipCache, BuildSystemModule);
+      IsFrameworkFound, BuildSystemModule);
   if (FE) {
     if (SuggestedModule && !LangOpts.AsmPreprocessor)
       HeaderInfo.getModuleMap().diagnoseHeaderInclusion(
@@ -1741,22 +1741,9 @@ Optional<FileEntryRef> Preprocessor::LookupHeaderIncludeOrImport(
   if (Callbacks) {
     // Give the clients a chance to recover.
     SmallString<128> RecoveryPath;
-    if (Callbacks->FileNotFound(Filename, RecoveryPath)) {
-      if (auto DE = FileMgr.getOptionalDirectoryRef(RecoveryPath)) {
-        // Add the recovery path to the list of search paths.
-        DirectoryLookup DL(*DE, SrcMgr::C_User, false);
-        HeaderInfo.AddSearchPath(DL, isAngled);
-
-        // Try the lookup again, skipping the cache.
-        Optional<FileEntryRef> File = LookupFile(
-            FilenameLoc,
-            LookupFilename, isAngled,
-            LookupFrom, LookupFromFile, CurDir, nullptr, nullptr,
-            &SuggestedModule, &IsMapped, /*IsFrameworkFound=*/nullptr,
-            /*SkipCache*/ true);
-        if (File)
-          return File;
-      }
+    if (Callbacks->FileNotFound(FilenameLoc, Filename, RecoveryPath)) {
+      if (auto File = FileMgr.getFileRef(RecoveryPath, /*openFile=*/true))
+        return *File;
     }
   }
 

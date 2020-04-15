@@ -750,7 +750,7 @@ bool DiagnosticIDs::ProcessDiag(DiagnosticsEngine &Diag) const {
 
   // If a fatal error has already been emitted, silence all subsequent
   // diagnostics.
-  if (Diag.FatalErrorOccurred) {
+  if (Diag.FatalErrorOccurred && DiagID != diag::err_pp_file_not_found) {
     if (DiagLevel >= DiagnosticIDs::Error &&
         Diag.Client->IncludeInDiagnosticCounts()) {
       ++Diag.NumErrors;
