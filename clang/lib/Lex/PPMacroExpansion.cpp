@@ -569,6 +569,11 @@ bool Preprocessor::HandleMacroExpandedIdentifier(Token &Identifier,
     // a macro context.
     Identifier.setFlag(Token::LeadingEmptyMacro);
     PropagateLineStartLeadingSpaceInfo(Identifier);
+
+    // Notify callbacks of the empty expansion.
+    if (Callbacks)
+      Callbacks->MacroExpansionFinished(MI);
+
     ++NumFastMacroExpanded;
     return false;
   } else if (MI->getNumTokens() == 1 &&
@@ -611,6 +616,13 @@ bool Preprocessor::HandleMacroExpandedIdentifier(Token &Identifier,
           if (NewMI != MI || MI->isFunctionLike())
             Diag(Identifier, diag::pp_disabled_macro_expansion);
         }
+    }
+
+    // Notify callbacks of the single token expansion.
+    if (Callbacks) {
+      if (!InMacroArgs && !InMacroArgPreExpansion)
+        Callbacks->MacroTokenExpanded(Identifier);
+      Callbacks->MacroExpansionFinished(MI);
     }
 
     // Since this is not an identifier token, it can't be macro expanded, so

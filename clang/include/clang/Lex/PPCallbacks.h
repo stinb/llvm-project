@@ -27,6 +27,7 @@ namespace clang {
   class MacroDefinition;
   class MacroDirective;
   class MacroArgs;
+  class MacroInfo;
 
 /// This interface provides a way to observe the actions of the
 /// preprocessor as it does its thing.
@@ -370,6 +371,14 @@ public:
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   virtual void Endif(SourceLocation Loc, SourceLocation IfLoc) {
   }
+
+  /// Called when a new token is expanded from a macro.
+  virtual void MacroTokenExpanded(const Token &Tok) {
+  }
+
+  /// Called when a macro expansion finishes.
+  virtual void MacroExpansionFinished(const MacroInfo *MI) {
+  }
 };
 
 /// Simple wrapper class for chaining callbacks.
@@ -603,6 +612,18 @@ public:
   void Endif(SourceLocation Loc, SourceLocation IfLoc) override {
     First->Endif(Loc, IfLoc);
     Second->Endif(Loc, IfLoc);
+  }
+
+  /// Called when a new token is expanded from a macro.
+  void MacroTokenExpanded(const Token &Tok) override {
+    First->MacroTokenExpanded(Tok);
+    Second->MacroTokenExpanded(Tok);
+  }
+
+  /// Called when a macro expansion finishes.
+  void MacroExpansionFinished(const MacroInfo *MI) override {
+    First->MacroExpansionFinished(MI);
+    Second->MacroExpansionFinished(MI);
   }
 };
 
