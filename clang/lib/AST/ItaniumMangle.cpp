@@ -3102,7 +3102,8 @@ void CXXNameMangler::mangleType(const VariableArrayType *T) {
 }
 void CXXNameMangler::mangleType(const DependentSizedArrayType *T) {
   Out << 'A';
-  mangleExpression(T->getSizeExpr());
+  if (T->getSizeExpr())
+    mangleExpression(T->getSizeExpr());
   Out << '_';
   mangleType(T->getElementType());
 }
@@ -4749,7 +4750,7 @@ void CXXNameMangler::mangleFunctionParam(const ParmVarDecl *parm) {
   // Compute 'L'.
   // parmDepth does not include the declaring function prototype.
   // FunctionTypeDepth does account for that.
-  assert(parmDepth < FunctionTypeDepth.getDepth());
+  //assert(parmDepth < FunctionTypeDepth.getDepth());
   unsigned nestingDepth = FunctionTypeDepth.getDepth() - parmDepth;
   if (FunctionTypeDepth.isInResultType())
     nestingDepth--;
