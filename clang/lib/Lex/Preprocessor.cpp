@@ -650,7 +650,8 @@ void Preprocessor::SkipTokensWhileUsingPCH() {
       CurLexer->Lex(Tok);
      break;
     case CLK_TokenLexer:
-      CurTokenLexer->Lex(Tok);
+      CurTokenLexer->Lex(Tok, Callbacks.get(),
+                         InMacroArgs || InMacroArgPreExpansion);
       break;
     case CLK_CachingLexer:
       CachingLex(Tok);
@@ -891,7 +892,8 @@ void Preprocessor::Lex(Token &Result) {
       ReturnedToken = CurLexer->Lex(Result);
       break;
     case CLK_TokenLexer:
-      ReturnedToken = CurTokenLexer->Lex(Result);
+      ReturnedToken = CurTokenLexer->Lex(Result, Callbacks.get(),
+                                         InMacroArgs || InMacroArgPreExpansion);
       break;
     case CLK_CachingLexer:
       CachingLex(Result);
