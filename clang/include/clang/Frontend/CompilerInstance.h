@@ -223,7 +223,7 @@ public:
   //
   // FIXME: Eliminate the llvm_shutdown requirement, that should either be part
   // of the context or else not CompilerInstance specific.
-  bool ExecuteAction(FrontendAction &Act);
+  bool ExecuteAction(FrontendAction &Act, TargetInfo *Target = nullptr);
 
   /// Load the list of plugins requested in the \c FrontendOptions.
   void LoadRequestedPlugins();
@@ -403,7 +403,7 @@ public:
   void setAuxTarget(TargetInfo *Value);
 
   // Create Target and AuxTarget based on current options
-  bool createTarget();
+  bool createTarget(TargetInfo *Target = nullptr);
 
   /// @}
   /// @name Virtual File System
