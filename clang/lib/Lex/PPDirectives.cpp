@@ -1721,10 +1721,12 @@ void Preprocessor::HandleDigitDirective(Token &DigitTok) {
   // example.
   if (Callbacks) {
     PPCallbacks::FileChangeReason Reason = PPCallbacks::RenameFile;
+#if 0 // Hack: Disable enter/exit.
     if (IsFileEntry)
       Reason = PPCallbacks::EnterFile;
     else if (IsFileExit)
       Reason = PPCallbacks::ExitFile;
+#endif
 
     Callbacks->FileChanged(CurPPLexer->getSourceLocation(), Reason, FileKind);
   }
