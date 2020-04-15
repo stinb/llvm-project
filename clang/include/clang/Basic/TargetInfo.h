@@ -224,9 +224,9 @@ enum OpenCLTypeKind : uint8_t {
 ///
 class TargetInfo : public TransferrableTargetInfo,
                    public RefCountedBase<TargetInfo> {
+protected:
   TargetOptions *TargetOpts;
   llvm::Triple Triple;
-protected:
   // Target values set by the ctor of the actual target implementation.  Default
   // values are specified by the TargetInfo constructor.
   bool HasMustTail;
