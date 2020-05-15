@@ -874,8 +874,10 @@ void TextNodeDumper::Visit(const APValue &Value, QualType Ty) {
 }
 
 void TextNodeDumper::dumpPointer(const void *Ptr) {
+#if 0
   ColorScope Color(OS, ShowColors, ASTDumpColor::Address);
   OS << ' ' << Ptr;
+#endif
 }
 
 void TextNodeDumper::dumpLocation(SourceLocation Loc) {
