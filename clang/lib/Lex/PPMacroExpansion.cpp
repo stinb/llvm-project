@@ -482,6 +482,8 @@ bool Preprocessor::HandleMacroExpandedIdentifier(Token &Identifier,
       Callbacks->MacroExpands(Identifier, M, Identifier.getLocation(),
                               /*Args=*/nullptr);
     ExpandBuiltinMacro(Identifier);
+    if (Callbacks)
+      Callbacks->MacroExpansionFinished(MI);
     return true;
   }
 
