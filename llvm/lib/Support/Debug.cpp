@@ -79,7 +79,7 @@ void setCurrentDebugTypes(const char **Types, unsigned Count) {
 } // namespace llvm
 
 // All Debug.h functionality is a no-op in NDEBUG mode.
-#ifndef NDEBUG
+#if 0
 
 namespace {
 struct CreateDebug {
