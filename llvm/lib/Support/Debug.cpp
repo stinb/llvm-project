@@ -77,7 +77,7 @@ void setCurrentDebugTypes(const char **Types, unsigned Count) {
 } // namespace llvm
 
 // All Debug.h functionality is a no-op in NDEBUG mode.
-#ifndef NDEBUG
+#if 0
 
 // -debug - Command line option to enable the DEBUG statements in the passes.
 // This flag may only be enabled in debug builds.
