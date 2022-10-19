@@ -4644,7 +4644,8 @@ Sema::ParsedFreeStandingDeclSpec(Scope *S, AccessSpecifier AS, DeclSpec &DS,
     if (!Record->getDeclName() && Record->isCompleteDefinition() &&
         DS.getStorageClassSpec() != DeclSpec::SCS_typedef) {
       if (getLangOpts().CPlusPlus ||
-          Record->getDeclContext()->isRecord()) {
+          Record->getDeclContext()->isRecord() ||
+          true) { // FIXME: Add an option to enable unconditionally?
         // If CurContext is a DeclContext that can contain statements,
         // RecursiveASTVisitor won't visit the decls that
         // BuildAnonymousStructOrUnion() will put into CurContext.
