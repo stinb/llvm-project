@@ -91,7 +91,9 @@ public:
   ///
   /// \returns true to indicate that the preprocessor should skip this file
   /// and not issue any diagnostic.
-  virtual bool FileNotFound(StringRef FileName) { return false; }
+  virtual bool FileNotFound(StringRef FileName,
+                            SourceLocation FileNameLoc,
+                            SmallVectorImpl<char> &RecoveryPath) { return false; }
 
   /// Callback invoked whenever an inclusion directive of
   /// any kind (\c \#include, \c \#import, etc.) has been processed, regardless
@@ -461,11 +463,12 @@ public:
     Second->FileSkipped(SkippedFile, FilenameTok, FileType);
   }
 
-  bool FileNotFound(StringRef FileName) override {
-    bool Skip = First->FileNotFound(FileName);
+  bool FileNotFound(StringRef FileName, SourceLocation FileNameLoc,
+                    SmallVectorImpl<char> &RecoveryPath) override {
+    bool Skip = First->FileNotFound(FileName, FileNameLoc, RecoveryPath);
     // Make sure to invoke the second callback, no matter if the first already
     // returned true to skip the file.
-    Skip |= Second->FileNotFound(FileName);
+    Skip |= Second->FileNotFound(FileName, FileNameLoc, RecoveryPath);
     return Skip;
   }
 
