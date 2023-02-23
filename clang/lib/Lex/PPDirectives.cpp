@@ -2147,9 +2147,14 @@ OptionalFileEntryRef Preprocessor::LookupHeaderIncludeOrImport(
     return File;
   }
 
-  // Give the clients a chance to silently skip this include.
-  if (Callbacks && Callbacks->FileNotFound(Filename))
-    return std::nullopt;
+  if (Callbacks) {
+    // Give clients a chance to recover.
+    SmallString<128> RecoveryPath;
+    if (Callbacks->FileNotFound(Filename, FilenameLoc, RecoveryPath)) {
+      if (auto File = FileMgr.getFileRef(RecoveryPath, /*openFile=*/true))
+        return *File;
+    }
+  }
 
   if (SuppressIncludeNotFoundError)
     return std::nullopt;
