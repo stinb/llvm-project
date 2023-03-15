@@ -2412,9 +2412,10 @@ TypeInfo ASTContext::getTypeInfoImpl(const Type *T) const {
   case Type::Auto:
   case Type::DeducedTemplateSpecialization: {
     const auto *A = cast<DeducedType>(T);
-    assert(!A->getDeducedType().isNull() &&
-           "cannot request the size of an undeduced or dependent auto type");
-    return getTypeInfo(A->getDeducedType().getTypePtr());
+    QualType DT = A->getDeducedType();
+    if (!DT.isNull())
+      return getTypeInfo(DT.getTypePtr());
+    break;
   }
 
   case Type::Paren:
