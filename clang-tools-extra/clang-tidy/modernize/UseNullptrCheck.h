@@ -10,6 +10,7 @@
 #define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_MODERNIZE_USE_NULLPTR_H
 
 #include "../ClangTidyCheck.h"
+#include "llvm/ADT/DenseSet.h"
 
 namespace clang::tidy::modernize {
 
@@ -28,6 +29,7 @@ public:
 private:
   const StringRef NullMacrosStr;
   SmallVector<StringRef, 1> NullMacros;
+  llvm::DenseSet<const CastExpr *> AlreadyCheckedCasts;
 };
 
 } // namespace clang::tidy::modernize
