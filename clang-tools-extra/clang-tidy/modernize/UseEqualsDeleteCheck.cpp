@@ -20,6 +20,7 @@ static const char DeletedNotPublic[] = "DeletedNotPublic";
 
 void UseEqualsDeleteCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {
   Options.store(Opts, "IgnoreMacros", IgnoreMacros);
+  Options.store(Opts, "SuggestPublic", SuggestPublic);
 }
 
 void UseEqualsDeleteCheck::registerMatchers(MatchFinder *Finder) {
@@ -66,7 +67,7 @@ void UseEqualsDeleteCheck::check(const MatchFinder::MatchResult &Result) {
     // Ignore this warning in macros, since it's extremely noisy in code using
     // DISALLOW_COPY_AND_ASSIGN-style macros and there's no easy way to
     // automatically fix the warning when macros are in play.
-    if (Func->getLocation().isMacroID() && IgnoreMacros)
+    if (!SuggestPublic || (Func->getLocation().isMacroID() && IgnoreMacros))
       return;
     // FIXME: Add FixItHint to make the method public.
     diag(Func->getLocation(), "deleted member function should be public");
