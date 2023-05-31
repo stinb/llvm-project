@@ -19593,8 +19593,7 @@ EnumConstantDecl *Sema::CheckEnumConstant(EnumDecl *Enum,
     Val = DefaultLvalueConversion(Val).get();
 
   if (Val) {
-    if (Enum->isDependentType() || Val->isTypeDependent() ||
-        Val->containsErrors())
+    if (Val->isTypeDependent() || Val->containsErrors())
       EltTy = Context.DependentTy;
     else {
       // FIXME: We don't allow folding in C++11 mode for an enum with a fixed
@@ -19670,9 +19669,7 @@ EnumConstantDecl *Sema::CheckEnumConstant(EnumDecl *Enum,
   }
 
   if (!Val) {
-    if (Enum->isDependentType())
-      EltTy = Context.DependentTy;
-    else if (!LastEnumConst) {
+    if (!LastEnumConst) {
       // C++0x [dcl.enum]p5:
       //   If the underlying type is not fixed, the type of each enumerator
       //   is the type of its initializing value:
