@@ -391,13 +391,15 @@ ParsedType Sema::getDestructorName(SourceLocation TildeLoc,
     //
     // also looks for type-name in the scope. Unfortunately, we can't
     // reasonably apply this fallback for dependent nested-name-specifiers.
-    if (SS.getScopeRep()->getPrefix()) {
-      if (ParsedType T = LookupInScope()) {
-        Diag(SS.getEndLoc(), diag::ext_qualified_dtor_named_in_lexical_scope)
-            << FixItHint::CreateRemoval(SS.getRange());
-        Diag(FoundDecls.back()->getLocation(), diag::note_destructor_type_here)
-            << GetTypeFromParser(T);
-        return T;
+    if (auto NNS = SS.getScopeRep()) {
+      if (NNS->getPrefix()) {
+        if (ParsedType T = LookupInScope()) {
+          Diag(SS.getEndLoc(), diag::ext_qualified_dtor_named_in_lexical_scope)
+              << FixItHint::CreateRemoval(SS.getRange());
+          Diag(FoundDecls.back()->getLocation(), diag::note_destructor_type_here)
+              << GetTypeFromParser(T);
+          return T;
+        }
       }
     }
   }
