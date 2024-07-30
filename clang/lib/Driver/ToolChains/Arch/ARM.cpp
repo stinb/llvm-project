@@ -517,10 +517,12 @@ arm::FloatABI arm::getARMFloatABI(const Driver &D, const llvm::Triple &Triple,
     else
       ABI = FloatABI::Soft;
 
+#if 0
     if (((Triple.getOS() != llvm::Triple::UnknownOS) &&
          !Triple.isOSFirmware()) ||
         !Triple.isOSBinFormatMachO())
       D.Diag(diag::warn_drv_assuming_mfloat_abi_is) << "soft";
+#endif
   }
 
   assert(ABI != FloatABI::Invalid && "must select an ABI");
