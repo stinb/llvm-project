@@ -623,7 +623,13 @@ bool TokenLexer::Lex(Token &Tok) {
   if (isAtEnd()) {
     // If this is a macro (not a token stream), mark the macro enabled now
     // that it is no longer being expanded.
-    if (Macro) Macro->EnableMacro();
+    if (Macro) {
+      Macro->EnableMacro();
+
+      // Notify callbacks of the end of the macro expansion.
+      if (PP.Callbacks)
+        PP.Callbacks->MacroExpansionFinished(Macro);
+    }
 
     Tok.startToken();
     Tok.setFlagValue(Token::StartOfLine , AtStartOfLine);
@@ -698,11 +704,16 @@ bool TokenLexer::Lex(Token &Tok) {
   AtStartOfLine = false;
   HasLeadingSpace = false;
 
+  // Notify callbacks of the token expansion.
+  IdentifierInfo *II = !Tok.isAnnotation() ? Tok.getIdentifierInfo() : nullptr;
+  if (PP.Callbacks && Macro && !PP.InMacroArgs && !PP.InMacroArgPreExpansion &&
+      (!II || !II->hasMacroDefinition()))
+    PP.Callbacks->MacroTokenExpanded(Tok);
+
   // Handle recursive expansion!
-  if (!Tok.isAnnotation() && Tok.getIdentifierInfo() != nullptr) {
+  if (II) {
     // Change the kind of this identifier to the appropriate token kind, e.g.
     // turning "for" into a keyword.
-    IdentifierInfo *II = Tok.getIdentifierInfo();
     Tok.setKind(II->getTokenID());
 
     // If this identifier was poisoned and from a paste, emit an error.  This
