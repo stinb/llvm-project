@@ -725,6 +725,7 @@ public:
 private:
   friend class ASTReader;
   friend class MacroArgs;
+  friend class TokenLexer;
 
   class PreambleConditionalStackStore {
     enum State {
