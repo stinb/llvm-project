@@ -10,6 +10,7 @@
 #define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_MODERNIZE_USENULLPTRCHECK_H
 
 #include "../ClangTidyCheck.h"
+#include "llvm/ADT/DenseSet.h"
 
 namespace clang::tidy::modernize {
 
@@ -27,6 +28,7 @@ private:
   const StringRef NullMacrosStr;
   SmallVector<StringRef, 1> NullMacros;
   std::vector<StringRef> IgnoredTypes;
+  llvm::DenseSet<const CastExpr *> AlreadyCheckedCasts;
 };
 
 } // namespace clang::tidy::modernize
