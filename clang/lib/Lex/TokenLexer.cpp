@@ -640,7 +640,13 @@ bool TokenLexer::Lex(Token &Tok) {
   if (isAtEnd()) {
     // If this is a macro (not a token stream), mark the macro enabled now
     // that it is no longer being expanded.
-    if (Macro) Macro->EnableMacro();
+    if (Macro) {
+      Macro->EnableMacro();
+
+      // Notify callbacks of the end of the macro expansion.
+      if (PP.Callbacks)
+        PP.Callbacks->MacroExpansionFinished(Macro);
+    }
 
     // CWG2947: Allow the following code:
     //
@@ -726,6 +732,12 @@ bool TokenLexer::Lex(Token &Tok) {
   }
   AtStartOfLine = false;
   HasLeadingSpace = false;
+
+  // Notify callbacks of the token expansion.
+  IdentifierInfo *II = !Tok.isAnnotation() ? Tok.getIdentifierInfo() : nullptr;
+  if (PP.Callbacks && Macro && !PP.InMacroArgs && !PP.InMacroArgPreExpansion &&
+      (!II || !II->hasMacroDefinition()))
+    PP.Callbacks->MacroTokenExpanded(Tok);
 
   // Handle recursive expansion!
   if (!Tok.isAnnotation() && Tok.getIdentifierInfo() != nullptr &&

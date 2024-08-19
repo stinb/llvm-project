@@ -28,6 +28,7 @@ class IdentifierInfo;
 class MacroDefinition;
 class MacroDirective;
 class MacroArgs;
+class MacroInfo;
 struct LexEmbedParametersResult;
 
 /// This interface provides a way to observe the actions of the
@@ -496,6 +497,14 @@ public:
     if (Pred(CB.get()))
       Released.push_back(CB.release());
   }
+
+  /// Called when a new token is expanded from a macro.
+  virtual void MacroTokenExpanded(const Token &Tok) {
+  }
+
+  /// Called when a macro expansion finishes.
+  virtual void MacroExpansionFinished(const MacroInfo *MI) {
+  }
 };
 
 /// Simple wrapper class for chaining callbacks.
@@ -804,6 +813,18 @@ public:
       SmallVectorImpl<PPCallbacks *> &Released) override {
     releaseIfPreserved(First, Pred, Released);
     releaseIfPreserved(Second, Pred, Released);
+  }
+
+  /// Called when a new token is expanded from a macro.
+  void MacroTokenExpanded(const Token &Tok) override {
+    First->MacroTokenExpanded(Tok);
+    Second->MacroTokenExpanded(Tok);
+  }
+
+  /// Called when a macro expansion finishes.
+  void MacroExpansionFinished(const MacroInfo *MI) override {
+    First->MacroExpansionFinished(MI);
+    Second->MacroExpansionFinished(MI);
   }
 };
 
