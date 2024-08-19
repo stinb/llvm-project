@@ -517,6 +517,11 @@ void UseNullptrCheck::check(const MatchFinder::MatchResult &Result) {
       Result.Nodes.getNodeAs<CXXRewrittenBinaryOperator>("checkBinopOperands"))
     return;
 
+  if (AlreadyCheckedCasts.contains(NullCast))
+    return;
+
+  AlreadyCheckedCasts.insert(NullCast);
+
   // Given an implicit null-ptr cast or an explicit cast with an implicit
   // null-to-pointer cast within use CastSequenceVisitor to identify sequences
   // of explicit casts that can be converted into 'nullptr'.
