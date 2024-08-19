@@ -47,10 +47,12 @@ static const char DeletedNotPublic[] = "DeletedNotPublic";
 UseEqualsDeleteCheck::UseEqualsDeleteCheck(StringRef Name,
                                            ClangTidyContext *Context)
     : ClangTidyCheck(Name, Context),
-      IgnoreMacros(Options.getLocalOrGlobal("IgnoreMacros", true)) {}
+      IgnoreMacros(Options.getLocalOrGlobal("IgnoreMacros", true)),
+      SuggestPublic(Options.getLocalOrGlobal("SuggestPublic", true)) {}
 
 void UseEqualsDeleteCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {
   Options.store(Opts, "IgnoreMacros", IgnoreMacros);
+  Options.store(Opts, "SuggestPublic", SuggestPublic);
 }
 
 void UseEqualsDeleteCheck::registerMatchers(MatchFinder *Finder) {
@@ -77,7 +79,7 @@ void UseEqualsDeleteCheck::check(const MatchFinder::MatchResult &Result) {
     SourceLocation EndLoc = Lexer::getLocForEndOfToken(
         Func->getEndLoc(), 0, *Result.SourceManager, getLangOpts());
 
-    if (IgnoreMacros && Func->getLocation().isMacroID())
+    if (!SuggestPublic || (IgnoreMacros && Func->getLocation().isMacroID()))
       return;
     // FIXME: Improve FixItHint to make the method public.
     diag(Func->getLocation(),

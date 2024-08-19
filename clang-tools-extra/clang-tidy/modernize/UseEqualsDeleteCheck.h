@@ -34,6 +34,7 @@ public:
 
 private:
   const bool IgnoreMacros;
+  const bool SuggestPublic;
 };
 
 } // namespace clang::tidy::modernize
