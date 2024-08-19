@@ -14156,13 +14156,17 @@ bool Sema::CheckUseOfCXXMethodAsAddressOfOperand(SourceLocation OpLoc,
   if (DRE->getQualifier())
     return false;
 
+  auto DiagID = getLangOpts().MSVCCompat
+                    ? diag::ext_unqualified_pointer_member_function
+                    : diag::err_unqualified_pointer_member_function;
+
   if (MD->getParent()->getName().empty())
-    return Diag(OpLoc, diag::err_unqualified_pointer_member_function)
+    return Diag(OpLoc, DiagID)
            << DRE->getSourceRange();
 
   SmallString<32> Str;
   StringRef Qual = (MD->getParent()->getName() + "::").toStringRef(Str);
-  return Diag(OpLoc, diag::err_unqualified_pointer_member_function)
+  return Diag(OpLoc, DiagID)
          << DRE->getSourceRange()
          << FixItHint::CreateInsertion(DRE->getSourceRange().getBegin(), Qual);
 }

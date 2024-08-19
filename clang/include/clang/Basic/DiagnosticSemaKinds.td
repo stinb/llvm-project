@@ -7433,6 +7433,9 @@ def ext_typecheck_addrof_void : Extension<
   "ISO C forbids taking the address of an expression of type 'void'">;
 def err_unqualified_pointer_member_function : Error<
   "must explicitly qualify name of member function when taking its address">;
+def ext_unqualified_pointer_member_function : ExtWarn<
+  "taking the address of a member function without qualification is a "
+  "Microsoft extension">;
 def err_invalid_form_pointer_member_function : Error<
   "cannot create a non-constant pointer to member function">;
 def err_address_of_function_with_pass_object_size_params: Error<
