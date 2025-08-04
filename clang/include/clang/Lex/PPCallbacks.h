@@ -509,10 +509,11 @@ public:
   }
 
   bool EmbedFileNotFound(StringRef FileName) override {
-    bool Skip = First->FileNotFound(FileName);
+    SmallString<128> RecoveryPath;
+    bool Skip = First->FileNotFound(FileName, SourceLocation(), RecoveryPath);
     // Make sure to invoke the second callback, no matter if the first already
     // returned true to skip the file.
-    Skip |= Second->FileNotFound(FileName);
+    Skip |= Second->FileNotFound(FileName, SourceLocation(), RecoveryPath);
     return Skip;
   }
 
