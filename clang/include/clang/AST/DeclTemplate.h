@@ -166,6 +166,8 @@ public:
   /// the second template parameter list will have depth 1, etc.
   unsigned getDepth() const;
 
+  bool adoptTemplateParameterList(DeclContext *Owner);
+
   /// Determine whether this template parameter list contains an
   /// unexpanded parameter pack.
   bool containsUnexpandedParameterPack() const;
