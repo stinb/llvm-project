@@ -2057,6 +2057,12 @@ void DeclaratorDecl::setTemplateParameterListsInfo(
   }
   // Set the template parameter lists info.
   getExtInfo()->setTemplateParameterListsInfo(Context, TPLists);
+
+  // Change parameter decl context to this decl.
+  if (DeclContext *DC = dyn_cast<DeclContext>(this)) {
+    for (TemplateParameterList *Params : TPLists)
+      Params->adoptTemplateParameterList(DC);
+  }
 }
 
 SourceLocation DeclaratorDecl::getOuterLocStart() const {

@@ -208,14 +208,13 @@ unsigned TemplateParameterList::getDepth() const {
     return cast<TemplateTemplateParmDecl>(FirstParm)->getDepth();
 }
 
-static bool AdoptTemplateParameterList(TemplateParameterList *Params,
-                                       DeclContext *Owner) {
+bool TemplateParameterList::adoptTemplateParameterList(DeclContext *Owner) {
   bool Invalid = false;
-  for (NamedDecl *P : *Params) {
+  for (NamedDecl *P : *this) {
     P->setDeclContext(Owner);
 
     if (const auto *TTP = dyn_cast<TemplateTemplateParmDecl>(P))
-      if (AdoptTemplateParameterList(TTP->getTemplateParameters(), Owner))
+      if (TTP->getTemplateParameters()->adoptTemplateParameterList(Owner))
         Invalid = true;
 
     if (P->isInvalidDecl())
@@ -447,7 +446,7 @@ FunctionTemplateDecl *
 FunctionTemplateDecl::Create(ASTContext &C, DeclContext *DC, SourceLocation L,
                              DeclarationName Name,
                              TemplateParameterList *Params, NamedDecl *Decl) {
-  bool Invalid = AdoptTemplateParameterList(Params, cast<DeclContext>(Decl));
+  bool Invalid = Params->adoptTemplateParameterList(cast<DeclContext>(Decl));
   auto *TD = new (C, DC) FunctionTemplateDecl(C, DC, L, Name, Params, Decl);
   if (Invalid)
     TD->setInvalidDecl();
@@ -534,7 +533,7 @@ ClassTemplateDecl *ClassTemplateDecl::Create(ASTContext &C, DeclContext *DC,
                                              DeclarationName Name,
                                              TemplateParameterList *Params,
                                              NamedDecl *Decl) {
-  bool Invalid = AdoptTemplateParameterList(Params, cast<DeclContext>(Decl));
+  bool Invalid = Params->adoptTemplateParameterList(cast<DeclContext>(Decl));
   auto *TD = new (C, DC) ClassTemplateDecl(C, DC, L, Name, Params, Decl);
   if (Invalid)
     TD->setInvalidDecl();
@@ -1110,7 +1109,7 @@ ConceptDecl *ConceptDecl::Create(ASTContext &C, DeclContext *DC,
                                  SourceLocation L, DeclarationName Name,
                                  TemplateParameterList *Params,
                                  Expr *ConstraintExpr) {
-  bool Invalid = AdoptTemplateParameterList(Params, DC);
+  bool Invalid = Params->adoptTemplateParameterList(DC);
   auto *TD = new (C, DC) ConceptDecl(DC, L, Name, Params, ConstraintExpr);
   if (Invalid)
     TD->setInvalidDecl();
@@ -1180,7 +1179,7 @@ ClassTemplatePartialSpecializationDecl::ClassTemplatePartialSpecializationDecl(
           SpecializedTemplate, Args, /*StrictPackMatch=*/false, PrevDecl),
       TemplateParams(Params), InstantiatedFromMember(nullptr, false),
       CanonInjectedTST(CanonInjectedTST) {
-  if (AdoptTemplateParameterList(Params, this))
+  if (Params->adoptTemplateParameterList(this))
     setInvalidDecl();
 }
 
@@ -1262,7 +1261,7 @@ TypeAliasTemplateDecl *
 TypeAliasTemplateDecl::Create(ASTContext &C, DeclContext *DC, SourceLocation L,
                               DeclarationName Name,
                               TemplateParameterList *Params, NamedDecl *Decl) {
-  bool Invalid = AdoptTemplateParameterList(Params, DC);
+  bool Invalid = Params->adoptTemplateParameterList(DC);
   auto *TD = new (C, DC) TypeAliasTemplateDecl(C, DC, L, Name, Params, Decl);
   if (Invalid)
     TD->setInvalidDecl();
@@ -1300,7 +1299,7 @@ VarTemplateDecl *VarTemplateDecl::Create(ASTContext &C, DeclContext *DC,
                                          SourceLocation L, DeclarationName Name,
                                          TemplateParameterList *Params,
                                          VarDecl *Decl) {
-  bool Invalid = AdoptTemplateParameterList(Params, DC);
+  bool Invalid = Params->adoptTemplateParameterList(DC);
   auto *TD = new (C, DC) VarTemplateDecl(C, DC, L, Name, Params, Decl);
   if (Invalid)
     TD->setInvalidDecl();
@@ -1547,7 +1546,7 @@ VarTemplatePartialSpecializationDecl::VarTemplatePartialSpecializationDecl(
                                     DC, StartLoc, IdLoc, SpecializedTemplate, T,
                                     TInfo, S, Args),
       TemplateParams(Params), InstantiatedFromMember(nullptr, false) {
-  if (AdoptTemplateParameterList(Params, DC))
+  if (Params->adoptTemplateParameterList(DC))
     setInvalidDecl();
 }
 
