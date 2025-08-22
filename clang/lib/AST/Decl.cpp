@@ -2059,9 +2059,10 @@ void DeclaratorDecl::setTemplateParameterListsInfo(
   getExtInfo()->setTemplateParameterListsInfo(Context, TPLists);
 
   // Change parameter decl context to this decl.
-  if (DeclContext *DC = dyn_cast<DeclContext>(this)) {
+  if (CXXMethodDecl *Method = dyn_cast<CXXMethodDecl>(this)) {
+    CXXRecordDecl *Parent = Method->getParent();
     for (TemplateParameterList *Params : TPLists)
-      Params->adoptTemplateParameterList(DC);
+      Params->adoptTemplateParameterList(Parent);
   }
 }
 
