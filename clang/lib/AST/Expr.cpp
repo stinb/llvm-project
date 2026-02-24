@@ -3836,6 +3836,8 @@ bool Expr::HasSideEffects(const ASTContext &Ctx,
     break;
 
   case GenericSelectionExprClass:
+    if (cast<GenericSelectionExpr>(this)->isResultDependent())
+      return false;
     return cast<GenericSelectionExpr>(this)->getResultExpr()->HasSideEffects(
         Ctx, IncludePossibleEffects);
 
