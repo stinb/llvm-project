@@ -280,7 +280,7 @@ bool Sema::ActOnSuperScopeSpecifier(SourceLocation SuperLoc,
   CXXRecordDecl *RD = nullptr;
   for (Scope *S = getCurScope(); S; S = S->getParent()) {
     if (S->isFunctionScope()) {
-      if (CXXMethodDecl *MD = dyn_cast<CXXMethodDecl>(S->getEntity()))
+      if (CXXMethodDecl *MD = dyn_cast_or_null<CXXMethodDecl>(S->getEntity()))
         RD = MD->getParent();
       break;
     }
