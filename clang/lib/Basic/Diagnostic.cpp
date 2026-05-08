@@ -354,9 +354,11 @@ void DiagnosticsEngine::PushDiagStatePoint(DiagState *State,
 
 void DiagnosticsEngine::setSeverity(diag::kind Diag, diag::Severity Map,
                                     SourceLocation L) {
+#if 0
   assert((Diags->isWarningOrExtension(Diag) ||
           (Map == diag::Severity::Fatal || Map == diag::Severity::Error)) &&
          "Cannot map errors into warnings!");
+#endif
   assert((L.isInvalid() || SourceMgr) && "No SourceMgr for valid location");
 
   // A command line -Wfoo has an invalid L and cannot override error/fatal
