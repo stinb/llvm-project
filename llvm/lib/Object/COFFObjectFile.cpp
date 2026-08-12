@@ -25,6 +25,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/MemoryBufferRef.h"
+#include "llvm/Support/Path.h"
 #include <algorithm>
 #include <cassert>
 #include <cinttypes>
@@ -558,6 +559,7 @@ Error COFFObjectFile::getDebugPDBInfo(const debug_directory *DebugDir,
                           InfoBytes.size());
   // Truncate the name at the first null byte. Ignore any padding.
   PDBFileName = PDBFileName.split('\0').first;
+  PDBFileName = llvm::sys::path::filename(PDBFileName);
   return Error::success();
 }
 
