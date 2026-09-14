@@ -146,6 +146,8 @@ public:
   using pointer = BlockT *;
   using reference = BlockT *;
 
+  SuccIterator() = default;
+
 private:
   InstructionT *Inst;
   int Idx;
