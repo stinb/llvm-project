@@ -1073,11 +1073,20 @@ Error ASTNodeImporter::ImportConstraintSatisfaction(
   ToSat.ContainsErrors = FromSat.ContainsErrors;
   if (!ToSat.IsSatisfied) {
     for (auto Record = FromSat.begin(); Record != FromSat.end(); ++Record) {
-      if (const Expr *E = Record->dyn_cast<const Expr *>()) {
+      if (Record->isNull()) {
+        ToSat.Details.emplace_back(nullptr);
+      } else if (const Expr *E = Record->dyn_cast<const Expr *>()) {
         ExpectedExpr ToSecondExpr = import(E);
         if (!ToSecondExpr)
           return ToSecondExpr.takeError();
         ToSat.Details.emplace_back(ToSecondExpr.get());
+      } else if (const auto *CR =
+                     Record->dyn_cast<const ConceptReference *>()) {
+        Expected<ConceptReference *> ToCR =
+            import(const_cast<ConceptReference *>(CR));
+        if (!ToCR)
+          return ToCR.takeError();
+        ToSat.Details.emplace_back(ToCR.get());
       } else {
         auto Pair =
             Record->dyn_cast<const ConstraintSubstitutionDiagnostic *>();
